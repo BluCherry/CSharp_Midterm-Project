@@ -1,0 +1,78 @@
+using System.Text;
+
+namespace Midterm_Project_Calculator;
+
+public enum TokenType
+{
+    Number,
+    Operation,
+    RightParenthesis,
+    LeftParenthesis,
+}
+
+public class Token
+{
+    public TokenType Type { get; }
+    public string Value { get; }
+
+    public Token(TokenType type, string value)
+    {
+        Type = type;
+        Value = value;
+    }
+    public override string ToString() => $"{Type}: {Value}";
+}
+
+public class Tokenizer
+{
+    private readonly string _Expression;
+
+    public Tokenizer(string Expression)
+    {
+        _Expression = Expression;
+    }
+
+    public List<Token> Tokenize()
+    {
+        var tokens = new List<Token>();
+        var number = new StringBuilder();
+
+        foreach (char character in _Expression)
+        {
+            if (char.IsWhiteSpace(character)) { continue; }
+            
+            if (char.IsDigit(character) || character == '.')
+            {
+                number.Append(character);
+                continue; 
+            }
+            
+        //Tokenizes numbers
+            if (number.Length > 0)
+            {
+                tokens.Add(new Token(TokenType.Number, number.ToString()));
+                number.Clear();
+            }
+            
+        //Tokenizes operations, and parenthesis
+            if ("+-x/".Contains(character))
+            {
+                tokens.Add(new Token(TokenType.Operation, character.ToString()));
+            }
+            else if (character == '(')
+            {
+                tokens.Add(new Token(TokenType.LeftParenthesis, character.ToString()));
+            }
+            else if (character == ')')
+            {
+                tokens.Add(new Token(TokenType.RightParenthesis, character.ToString()));
+            }
+            else
+            {
+                throw new FormatException($"Invalid character '{character}'.");
+            }
+        }
+            
+    }
+    
+}
